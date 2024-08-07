@@ -4,24 +4,31 @@ using Serilog.Formatting.Json;
 
 namespace Netcorext.Logging.Serilog;
 
-public class JsonPropertyFilterFormatter : ITextFormatter
+public sealed class JsonPropertyFilterFormatter : ITextFormatter
 {
     private readonly string? _closingDelimiter;
     private readonly bool _renderMessage;
+    private readonly IFormatProvider? _formatProvider;
     private readonly JsonValueFormatter _jsonValueFormatter = new();
 
     private readonly HashSet<string> _defaultAllowList = new(StringComparer.CurrentCultureIgnoreCase)
                                                          {
+                                                             "ActionName",
                                                              "ConnectionId",
                                                              "ContentLength",
+                                                             "ContentRoot",
+                                                             "Controller",
                                                              "DeviceId",
                                                              "Duration",
                                                              "Elapsed",
                                                              "ElapsedMilliseconds",
+                                                             "EndpointName",
+                                                             "EnvName",
                                                              "EventId",
                                                              "Headers",
                                                              "Host",
                                                              "HostingRequestFinishedLog",
+                                                             "HostingRequestStartingLog",
                                                              "Ip",
                                                              "MachineName",
                                                              "Method",
@@ -46,8 +53,9 @@ public class JsonPropertyFilterFormatter : ITextFormatter
 
     public JsonPropertyFilterFormatter(string? closingDelimiter = null, bool renderMessage = false, IFormatProvider? formatProvider = null, string? allowProperties = null)
     {
-        _closingDelimiter = closingDelimiter;
+        _closingDelimiter = closingDelimiter ?? Environment.NewLine;
         _renderMessage = renderMessage;
+        _formatProvider = formatProvider;
 
         var allowProps = allowProperties?.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
                                          .Select(t => t.Trim())
@@ -114,7 +122,7 @@ public class JsonPropertyFilterFormatter : ITextFormatter
 
             foreach (var property in logEvent.Properties)
             {
-                if (!_allowProperties.Contains("*") && !_allowProperties.Contains(property.Key.ToLower()))
+                if (!_allowProperties.Contains("*") && !_allowProperties.Contains(property.Key))
                     continue;
 
                 if (propertyDelimiter != null)
@@ -132,6 +140,5 @@ public class JsonPropertyFilterFormatter : ITextFormatter
 
         output.Write('}');
         output.Write(_closingDelimiter);
-        output.WriteLine();
     }
 }

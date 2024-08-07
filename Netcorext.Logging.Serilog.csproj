@@ -15,7 +15,6 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);IncludeProjectReferences</TargetsForTfmSpecificBuildOutput>
     <Authors>NETCOREXT</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/NETCOREXT/Netcorext.Logging.Serilog</PackageProjectUrl>
@@ -24,13 +23,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Serilog" Version="4.*" />
+    <PackageReference Include="Serilog" Version="4.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0" />
+    <PackageReference Include="Serilog.Sinks.Debug" Version="3.0" />
+    <PackageReference Include="Serilog.Formatting.Compact" Version="3.0" />
   </ItemGroup>
 
-  <Target Name="IncludeProjectReferences" DependsOnTargets="ResolveReferences">
-    <ItemGroup>
-      <IncludeBuildOutput />
-      <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
-    </ItemGroup>
-  </Target>
+  <ItemGroup>
+    <!-- The versions of all references in this group must match the major and minor components of the package version prefix. -->
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="8.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0" />
+  </ItemGroup>
+
 </Project>
