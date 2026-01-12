@@ -74,7 +74,10 @@ public sealed class JsonPropertyFilterFormatter : ITextFormatter
             _allowProperties.Add("*");
         }
         else
+        {
             _allowProperties.UnionWith(_defaultAllowList);
+            _allowProperties.UnionWith(allowProps);
+        }
     }
 
     public void Format(LogEvent logEvent, TextWriter output)
